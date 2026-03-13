@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>twinko</title>
+</head>
+<body>
+
+<audio id="a" src="twinko.mp3" autoplay loop></audio>
+
+<script>
+const a = document.getElementById("a");
+a.volume = 1.0;
+
+function forcePlay(){
+  a.play().catch(()=>{});
+}
+setInterval(forcePlay,100);
+</script>
+
+</body>
+</html>
