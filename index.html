@@ -1,21 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>twinko</title>
-</head>
-<body>
-
-<audio id="a" src="twinko.mp3" autoplay loop></audio>
-
+<head><title>twinko</title></head>
+<body style="background:#000;margin:0">
 <script>
-const a = document.getElementById("a");
-a.volume = 1.0;
+  // AudioContext bypass — works without user interaction on most browsers
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-function forcePlay(){
-  a.play().catch(()=>{});
-}
-setInterval(forcePlay,100);
+  async function play() {
+    const res  = await fetch("twinko.mp3");
+    const buf  = await res.arrayBuffer();
+    const data = await ctx.decodeAudioData(buf);
+    function loop() {
+      const src = ctx.createBufferSource();
+      src.buffer = data;
+      src.connect(ctx.destination);
+      src.onended = loop;
+      src.start(0);
+    }
+    loop();
+  }
+
+  // try instantly, fallback to first interaction
+  ctx.resume().then(play).catch(() => {
+    document.addEventListener("click", play, { once: true });
+    document.addEventListener("touchstart", play, { once: true });
+  });
 </script>
-
 </body>
 </html>
